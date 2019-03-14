@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('mysql-writer-simulator:server');
 var http = require('http');
+let config = require('../config');
 
 /**
  * Get port from environment and store in Express.
@@ -28,6 +29,9 @@ var server = http.createServer(app);
 server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
+
+let sequelizeClient = require('../service/mySqlSequelizeClient');
+let sequelize = sequelizeClient.sequelize;
 
 /**
  * Normalize a port into a number, string, or false.
@@ -86,5 +90,5 @@ function onListening() {
   var bind = typeof addr === 'string'
     ? 'pipe ' + addr
     : 'port ' + addr.port;
-  debug('Listening on ' + bind);
+  console.log('Listening on ' + bind);
 }

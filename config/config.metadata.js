@@ -26,5 +26,15 @@ module.exports = {
             "env": "DATABASE_PASSWORD",
             "default": ""
         }
+    },
+    "settings": {
+        "models": {
+            "Schema3Seconds": {
+                "createFrequency": 3
+            },
+            "Schema10Seconds": {
+                "createFrequency": 10
+            }
+        }
     }
 };

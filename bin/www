@@ -30,8 +30,8 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-let sequelizeClient = require('../service/mySqlSequelizeClient');
-let sequelize = sequelizeClient.sequelize;
+let workerManager = require('../service/workerManager.js');
+workerManager.start();
 
 /**
  * Normalize a port into a number, string, or false.

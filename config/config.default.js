@@ -1,6 +1,7 @@
 module.exports = {
     "mysql": {
-        "host": "127.0.0.1",
-        "port": "1234"
+        "host": "192.168.160.113",
+        "port": "3306",
+        "database": "weesingdb"
     }
 };

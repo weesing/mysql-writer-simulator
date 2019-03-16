@@ -36,11 +36,12 @@ let ModelTemplate = function (sequelize, schemaName) {
         'contentJSON': {
             type: DataTypes.JSON,
             allowNull: true
-        };
+        }
     });
 };
 
 ModelTemplate.prototype.generateRandomRow = function () {
+    let instance = this;
     let newUUID = uuid.v4();
     instance.createdNbRows += 1;
     return instance.model.create({
@@ -59,6 +60,7 @@ ModelTemplate.prototype.generateRandomRow = function () {
 };
 
 ModelTemplate.prototype.readRandomRow = function (model) {
+    let instance = this;
     let findId = Math.floor(Math.random() * instance.createdNbRows);
     console.log('Attempting to read id ' + findId);
     return instance.model.findAll({

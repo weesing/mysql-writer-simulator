@@ -63,3 +63,4 @@ typings/
 /.idea/codeStyles/Project.xml
 
 config.secrets.js
+.vscode

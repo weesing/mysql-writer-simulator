@@ -8,6 +8,7 @@ var app = require('../app');
 var debug = require('debug')('mysql-writer-simulator:server');
 var http = require('http');
 let config = require('../config');
+const util = require('util');
 
 /**
  * Get port from environment and store in Express.
@@ -16,22 +17,28 @@ let config = require('../config');
 var port = normalizePort(process.env.PORT || '3000');
 app.set('port', port);
 
-/**
- * Create HTTP server.
- */
-
-var server = http.createServer(app);
-
-/**
- * Listen on provided port, on all network interfaces.
- */
-
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
 
 let workerManager = require('../service/workerManager.js');
-workerManager.start();
+workerManager.start()
+  .then(function () {
+    /**
+     * Create HTTP server.
+     */
+    
+    var server = http.createServer(app);
+    
+    /**
+     * Listen on provided port, on all network interfaces.
+     */
+    
+    server.listen(port);
+    server.on('error', onError);
+    server.on('listening', onListening);
+  })
+  .catch( function (err) {
+    console.log("Server failed to start due to Sequelize errors.");
+    console.log(util.inspect(err));
+  })
 
 /**
  * Normalize a port into a number, string, or false.

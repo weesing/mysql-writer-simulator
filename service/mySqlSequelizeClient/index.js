@@ -3,6 +3,7 @@
 const path = require('path');
 const Sequelize = require('sequelize');
 const _ = require('lodash');
+const util = require('util');
 
 const config = require('../../config');
 const db = { databaseDaos: { } };
@@ -32,7 +33,9 @@ mySqlConfig.logging = function (message, ms) {
 mySqlConfig.benchmark = true;
 
 var sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USERNAME, process.env.DATABASE_PASSWORD, mySqlConfig);
+console.log('Initializing Sequelize...');
 db.sequelize = sequelize;
+console.log('Sequelize initialized.');
 
 db.initModels = function (modelsSettings) {
     let ModelTemplate = require('../../models/ModelTemplate');
@@ -40,7 +43,9 @@ db.initModels = function (modelsSettings) {
     let modelNames = _.keys(modelsSettings);
     _.each(modelNames, function (modelName) {
 
+        console.log('Attempting to initialize model ' + modelName);
         let modelTemplate = new ModelTemplate(sequelize, modelName);
+        console.log('******** Model ' + modelName + ' initialized.');
         sequelizeModelsInfo.push({
             modelName: modelName,
             modelTemplate: modelTemplate
@@ -49,9 +54,19 @@ db.initModels = function (modelsSettings) {
         db[modelName] = modelTemplate.model;
     });
 
-    db.sequelize.sync();
-
-    return sequelizeModelsInfo;
+    console.log('Performing syncing with MySQL database');
+    return new Promise(function (resolve, reject) {
+        db.sequelize.sync()
+            .then(function (syncResult) {
+                console.log('################ Syncing completed. #################');
+                return resolve(sequelizeModelsInfo);
+            })
+            .catch(function (err) {
+                console.log('Error occured while syncing with MySQL database!');
+                return reject(err);
+            });
+    
+    });
 };
 
 module.exports = db;

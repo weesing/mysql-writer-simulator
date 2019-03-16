@@ -41,9 +41,9 @@ db.initModels = function (modelsSettings) {
     let ModelTemplate = require('../../models/ModelTemplate');
     let sequelizeModelsInfo = [];
     let modelNames = _.keys(modelsSettings);
+    console.log('Attempting to initialize models');
     _.each(modelNames, function (modelName) {
 
-        console.log('Attempting to initialize model ' + modelName);
         let modelTemplate = new ModelTemplate(sequelize, modelName);
         console.log('******** Model ' + modelName + ' initialized.');
         sequelizeModelsInfo.push({

@@ -29,11 +29,12 @@ module.exports = {
     },
     "settings": {
         "models": {
-            "Schema3Seconds": {
-                "createFrequency": 3
-            },
-            "Schema10Seconds": {
-                "createFrequency": 10
+            "default": {
+                //No schemas
+                "SampleSchema": {
+                    "createFrequency": 3,
+                    "readFrequency": 1
+                }
             }
         }
     }

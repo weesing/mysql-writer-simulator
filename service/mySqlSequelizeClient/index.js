@@ -32,26 +32,26 @@ mySqlConfig.logging = function (message, ms) {
 mySqlConfig.benchmark = true;
 
 var sequelize = new Sequelize(process.env.DATABASE_NAME, process.env.DATABASE_USERNAME, process.env.DATABASE_PASSWORD, mySqlConfig);
+db.sequelize = sequelize;
 
 db.initModels = function (modelsSettings) {
-    let modelTemplate = require('../../models/ModelTemplate');
-    let sequelizeModels = [];
+    let ModelTemplate = require('../../models/ModelTemplate');
+    let sequelizeModelsInfo = [];
     let modelNames = _.keys(modelsSettings);
     _.each(modelNames, function (modelName) {
 
-        let modelResult = modelTemplate(sequelize, modelName);
-        sequelizeModels.push({
+        let modelTemplate = new ModelTemplate(sequelize, modelName);
+        sequelizeModelsInfo.push({
             modelName: modelName,
-            modelResult: modelResult
+            modelTemplate: modelTemplate
         });
 
-        db[modelName] = modelResult.sequelizeModel;
+        db[modelName] = modelTemplate.model;
     });
 
-    db.sequelize = sequelize;
     db.sequelize.sync();
 
-    return sequelizeModels;
+    return sequelizeModelsInfo;
 };
 
 module.exports = db;

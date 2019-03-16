@@ -1,36 +1,69 @@
 const _ = require('lodash');
 const Promise = require('bluebird');
 
-var Worker = function (options) {
+let Worker = function (options) {
     let instance = this;
-    instance.frequency = _.get(options, 'frequency');
-    instance.sequelizeModel = _.get(options, 'sequelizeModel');
-    instance.stopSignal = false;
+    instance.createFrequency = _.get(options, 'createFrequency');
+    instance.readFrequency = _.get(options, 'readFrequency');
+    instance.modelTemplate = _.get(options, 'modelTemplate');
+    instance.stopCreateSignal = false;
+    instance.stopReadSignal = false;
 };
 
 Worker.prototype.createRow = function () {
     let instance = this;
-    console.log(instance.sequelizeModel);
-    return instance.sequelizeModel.createFunction(instance.sequelizeModel.model);
+    return instance.modelTemplate.generateRandomRow();
 };
 
-Worker.prototype.loop = function () {
+Worker.prototype.createLoop = function () {
     let instance = this;
+    if ( _.isNil(instance.createFrequency) || instance.createFrequency <= 0) {
+        return;
+    }
     setTimeout ( function () {
-        if (instance.stopSignal) {
-            instance.stopSignal = false;
+        if (instance.stopCreateSignal) {
+            instance.stopCreateSignal = false;
             return;
         }
 
         instance.createRow();
-        instance.loop();
-
-    }, instance.frequency * 1000);
+        instance.createLoop();
+    }, instance.createFrequency * 1000);
+    return;
 };
+
+Worker.prototype.readRow = function () {
+    let instance = this;
+    return instance.modelTemplate.readRandomRow();
+    return;
+}
+
+Worker.prototype.readLoop = function () {
+    let instance = this;
+    if ( _.isNil(instance.readFrequency) || instance.readFrequency <= 0) {
+        return;
+    }
+    setTimeout ( function () {
+        if (instance.stopReadSignal) {
+            instance.stopReadSignal = false;
+            return;
+        }
+
+        instance.readRow();
+        instance.readLoop();
+    }, instance.readFrequency * 1000);
+    return;
+}
+
+Worker.prototype.start = function () {
+    let instance = this;
+    instance.createLoop();
+}
 
 Worker.prototype.stop = function () {
     let instance = this;
-    instance.stopSignal = true;
+    instance.stopCreateSignal = true;
+    instance.stopReadSignal = true;
 };
 
 module.exports = Worker;

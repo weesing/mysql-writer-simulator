@@ -1,26 +1,28 @@
 let config = require('../config');
 let _ = require('lodash');
-let Worker = require('./worker');
+let Worker = require('./Worker');
 
 let workerManager = {};
 
 workerManager.start = function () {
-    let sequelizeClient = require('../service/mySqlSequelizeClient');
     let modelsSettings = _.get(config, 'settings.models', {});
+
+    let sequelizeClient = require('../service/mySqlSequelizeClient');
     let sequelizeModelsInfo = sequelizeClient.initModels(modelsSettings);
 
     _.each(sequelizeModelsInfo, function (sequelizeModelInfo) {
         let modelName = sequelizeModelInfo.modelName;
-        let sequelizeModel = sequelizeModelInfo.modelResult;
-        let modelInfo = _.get(config, 'settings.models.' + modelName);
-        if (!_.isNil(modelInfo)) {
+        let modelTemplate = sequelizeModelInfo.modelTemplate;
+        let modelSettings = _.get(config, 'settings.models.' + modelName);
+        if (!_.isNil(modelSettings)) {
             let workerInstance = new Worker({
-                frequency: modelInfo.createFrequency,
-                sequelizeModel: sequelizeModel
+                createFrequency: modelSettings.createFrequency,
+                readFrequency: modelSettings.readFrequency,
+                modelTemplate: modelTemplate
             });
-            workerInstance.loop();
+            workerInstance.start();
         }
-    })
+    });
 };
 
 module.exports = workerManager;
